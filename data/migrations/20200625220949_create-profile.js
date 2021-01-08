@@ -18,9 +18,8 @@ exports.up = function (knex) {
       incidents.boolean('less_lethal_methods').defaultsTo(0);
       incidents.boolean('lethal_force').defaultsTo(0);
       incidents.boolean('uncategorized').defaultsTo(0);
-    })
+    });
 };
 exports.down = function (knex) {
-  return knex.schema
-    .dropTableIfExists('incidents');
+  return knex.schema.dropTableIfExists('incidents');
 };

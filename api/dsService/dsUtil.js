@@ -32,7 +32,7 @@ function dsFetch() {
           lethal_force: incident.lethal_force,
           uncategorized: incident.uncategorized,
         };
-        
+
         incomingIncidents.push(newIncident);
       });
 
@@ -42,7 +42,7 @@ function dsFetch() {
         .then((batchResponse) => {
           return {
             status: 201,
-            message: 'Batch insertion success'
+            message: 'Batch insertion success',
           };
         })
         .catch((error) => {
