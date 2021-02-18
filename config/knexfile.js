@@ -24,8 +24,10 @@ module.exports = {
   production: {
     client: 'pg',
     connection: pgConnect,
-    ssl: {
-      rejectUnauthorized: false,
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false, // very important
+      },
     },
     migrations: { directory: '../data/migrations' },
     seeds: { directory: '../data/seeds' },
