@@ -16,7 +16,7 @@ function dsInitialFetch() {
   const incomingIncidents = [];
 
   return axios
-    .get(`${dsURL}/getdata/`)
+    .get(`${dsURL}`)
     .then((response) => {
       response.data.forEach((incident) => {
         let newIncident = {
