@@ -22,7 +22,7 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: 'https://testingtwitterincidents.herokuapp.com?ssl=true',
     ssl: {
       require: true,
       rejectUnauthorized: false,
