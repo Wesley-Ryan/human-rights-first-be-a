@@ -1,6 +1,7 @@
 var dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
 
+const pgConnect = `${process.env.DATABASE_URL}?sslmode=true`;
 module.exports = {
   development: {
     client: 'pg',
@@ -22,7 +23,7 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: pgConnect,
     ssl: {
       rejectUnauthorized: false,
     },
