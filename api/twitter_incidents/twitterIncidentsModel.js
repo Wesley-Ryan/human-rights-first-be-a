@@ -4,6 +4,7 @@ module.exports = {
   getAllPendingIncidents,
   getAllRejectedIncidents,
   getAllApprovedIncidents,
+  getLastID,
   getTwitterIncidentById,
   updateTwitterIncident,
   cleanTwitterIncident,
@@ -35,6 +36,12 @@ function getAllApprovedIncidents() {
     .orderBy('date', 'desc');
 }
 /**
+ * Returns the last known id in the database
+ */
+function getLastID() {
+  return db('twitter_incidents').max('server_id');
+}
+/**
  * @param {string} id
  * Function to return a specific Twitter incident by provided id
  */
@@ -57,6 +64,10 @@ async function updateTwitterIncident(id, changes) {
     throw new Error(error.message);
   }
 }
+/**
+ * @param {Object} incident
+ * Function to Edit and return a specific Twitter incident by provided id
+ */
 async function createTwitterIncident(incident) {
   try {
     await db('twitter_incidents').insert(incident);
@@ -65,6 +76,10 @@ async function createTwitterIncident(incident) {
     throw new Error(error.message);
   }
 }
+/**
+ * @param {Object} twitterIncident
+ * Retuns Twitter incident that matches the shape of the Reddit incident
+ */
 
 function cleanTwitterIncident(twitterIncident) {
   twitterIncident.map((incident) => {
