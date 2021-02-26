@@ -1,3 +1,4 @@
+const { where } = require('../../data/db-config');
 const db = require('../../data/db-config');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
   createIncident,
   getTimelineIncidents,
   deleteDB,
+  deleteIncident,
 };
 
 /**
@@ -66,6 +68,10 @@ async function createIncident(incident) {
  */
 async function deleteDB() {
   return await db('incidents').del();
+}
+
+async function deleteIncident(id) {
+  return await db('incidents').where('id', id).del();
 }
 
 /**
