@@ -129,16 +129,16 @@ router.get('/getincidents', async (req, res) => {
     res.status(500).json({ message: 'Request Error' });
   }
 });
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const incidents = await Incidents.deleteIncident(id);
+// router.get('/:id', async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const incidents = await Incidents.deleteIncident(id);
 
-    res.status(201).json({ message: "It's done :(" });
-  } catch (e) {
-    res.status(500).json({ message: 'Request Error could not delete' });
-  }
-});
+//     res.status(201).json({ message: "It's done :(" });
+//   } catch (e) {
+//     res.status(500).json({ message: 'Request Error could not delete' });
+//   }
+// });
 
 // ### GET /queryincidents ###
 // - returns incident data based on provided date range
