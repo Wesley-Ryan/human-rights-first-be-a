@@ -9,6 +9,8 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const jsdocConfig = require('../config/jsdoc');
 const dotenv = require('dotenv');
 const config_result = dotenv.config();
+const Helper = require('./incidents/incidentsModel');
+
 const cron = require('node-cron');
 
 if (process.env.NODE_ENV != 'production' && config_result.error) {
@@ -28,7 +30,7 @@ const twitterIncidentsRouter = require('./twitter_incidents/twitterIncidentsRout
 const dataRouter = require('./util/dataRouter');
 
 //###[ Models ]###
-const { dsFetch } = require('./dsService/dsUtil');
+const { dsUpdateFetch, getLastId } = require('./dsService/dsUtil');
 
 const app = express();
 
@@ -61,6 +63,16 @@ app.use('/incidents', incidentsRouter);
 app.use('/data', dataRouter);
 app.use('/dashboard', twitterIncidentsRouter);
 
+// cron job to retrieve data from DS API
+cron.schedule('* * 2 * *', async function () {
+  console.log('The answer to life, the universe, and everything!');
+  try {
+    const [lastId] = await Helper.getLastRedditID();
+    dsUpdateFetch(lastId.max);
+  } catch (error) {
+    console.log('Unable to get last id', error.message);
+  }
+});
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -86,11 +98,6 @@ app.use(function (err, req, res, next) {
     return res.json(errObject);
   }
   next(err);
-});
-
-// cron job to retrieve data from DS API
-cron.schedule('* * 12 * *', () => {
-  dsFetch();
 });
 
 module.exports = app;
