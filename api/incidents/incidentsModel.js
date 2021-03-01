@@ -1,77 +1,98 @@
 const db = require('../../data/db-config');
 
 module.exports = {
-  getAllIncidents,
-  getIncidentById,
-  getLastRedditID,
-  createIncident,
-  getTimelineIncidents,
-  deleteDB,
+  getAllPendingIncidents,
+  getAllRejectedIncidents,
+  getAllApprovedIncidents,
+  getLearningData,
+  getLastID,
+  getTwitterIncidentById,
+  updateTwitterIncident,
+  createTwitterIncident,
 };
 
 /**
- * Returns all incidents in the db sorted by newest incident first
+ * Returns all pending Twitter incidents in the db sorted by newest incident first
  */
-async function getAllIncidents() {
-  return await db('incidents').whereNot({ date: null }).orderBy('date', 'desc');
+function getAllPendingIncidents() {
+  return db('twitter_incidents')
+    .where({ pending: true })
+    .orderBy('date', 'desc');
 }
-
 /**
- *
- * @param {number} limit
- * Returns incidents in the database sorted by newest incident first limited by the number defined in limit parameter
+ * Returns all rejected Twitter incidents in the db sorted by newest incident first
  */
-async function getTimelineIncidents(limit) {
-  return await db('incidents')
-    .whereNot({ date: null })
-    .orderBy('date', 'desc')
-    .limit(limit);
+function getAllRejectedIncidents() {
+  return db('twitter_incidents')
+    .where({ rejected: true })
+    .orderBy('date', 'desc');
+}
+/**
+ * Returns all approved Twitter incidents in the db sorted by newest incident first
+ */
+function getAllApprovedIncidents() {
+  return db('twitter_incidents')
+    .where({ approved: true })
+    .orderBy('date', 'desc');
+}
+/**
+ * Returns all approved/rejected Twitter incidents for DS Training Data
+ */
+function getLearningData() {
+  return db('twitter_incidents')
+    .whereNot({ pending: true })
+    .orderBy('date', 'desc');
 }
 
 /**
  * Returns the last known id in the database
  */
-function getLastRedditID() {
-  return db('incidents').max('id');
+function getLastID() {
+  return db('twitter_incidents').max('id');
 }
-
 /**
- * @param {object} incident
- * Helper function for individual incident insertion
+ * @param {string} id
+ * Function to return a specific Twitter incident by provided id
  */
-async function createIncident(incident) {
-  const newIncident = {
-    incident_id: incident.case_id,
-    src: JSON.stringify(incident.links),
-    categories: JSON.stringify(incident.tags),
-    city: incident.city,
-    state: incident.state,
-    title: incident.title,
-    lat: incident.lat,
-    long: incident.long,
-    desc: incident.description,
-    date: incident.dates,
-    verbalization: incident.verbalization,
-    empty_hand_soft: incident.empty_hand_soft,
-    empty_hand_hard: incident.empty_hand_hard,
-    less_lethal_methods: incident.less_lethal_methods,
-    lethal_force: incident.lethal_force,
-    uncategorized: incident.uncategorized,
-  };
-  return db('incidents').insert(newIncident);
-}
-
-/**
- * Utility function to clear database contents
- */
-async function deleteDB() {
-  return await db('incidents').del();
+function getTwitterIncidentById(id) {
+  return db('twitter_incidents').where('id', id);
 }
 
 /**
  * @param {string} id
- * Function to return a specific incident by provided id
+ * @param {Object} changes
+ * Function to Edit and return a specific Twitter incident by provided id
  */
-function getIncidentById(id) {
-  return db('incidents').where('incident_id', id);
+async function updateTwitterIncident(id, changes) {
+  try {
+    await db('twitter_incidents').where('id', id).update(changes);
+    return db('twitter_incidents').where('id', id);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+/**
+ * @param {Object} incident
+ * Function to Edit and return a specific Twitter incident by provided id
+ */
+async function createTwitterIncident(incident) {
+  try {
+    await db('twitter_incidents').insert(incident);
+    return 'New incident Created';
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+/**
+ * @param {Object} twitterIncident
+ * Retuns Twitter incident that matches the shape of the Reddit incident
+ */
+
+function cleanTwitterIncident(twitterIncident) {
+  twitterIncident.map((incident) => {
+    incident.src = JSON.parse(incident.src);
+    incident.categories = JSON.parse(incident.categories);
+    return incident;
+  });
 }
