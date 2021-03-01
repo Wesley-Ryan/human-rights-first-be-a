@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   validatePostBody,
   addIdtoPost,
+  validateManyPosts,
 } = require('../middleware/twitterIncidentValidations');
 // Model and util imports
 const twitterIncidentHelper = require('./twitterIncidentsModel');
@@ -60,26 +61,17 @@ router.put('/incidents/:id', validatePostBody, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.put('/incidents/', validatePostBody, async (req, res) => {
-  const { id } = req.params;
-  const changes = req.newIncident;
+router.put('/incidents/', async (req, res) => {
+  const changes = req.body;
   try {
-    const updatedTwitterIncident = await twitterIncidentHelper.updateTwitterIncident(
-      id,
-      changes
-    );
-    if (updatedTwitterIncident.length < 1) {
-      res.status(400).json({
-        message:
-          'ERROR: The incident requested does not exist. Please choose a valid incident.',
-      });
-    }
-    res.status(201).json(updatedTwitterIncident);
+    await changes.forEach((change) => {
+      twitterIncidentHelper.updateTwitterIncident(change.id, change);
+    });
+    res.status(201).json({ message: 'Incidents Successfully Updated' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post('/incidents', validatePostBody, addIdtoPost, async (req, res) => {
   try {
     const newPostedIncident = await twitterIncidentHelper.createTwitterIncident(
