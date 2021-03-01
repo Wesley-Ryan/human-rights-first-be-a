@@ -8,7 +8,6 @@ module.exports = {
   getLastID,
   getTwitterIncidentById,
   updateTwitterIncident,
-  createTwitterIncident,
 };
 
 /**
@@ -87,11 +86,3 @@ async function createTwitterIncident(incident) {
  * @param {Object} twitterIncident
  * Retuns Twitter incident that matches the shape of the Reddit incident
  */
-
-function cleanTwitterIncident(twitterIncident) {
-  twitterIncident.map((incident) => {
-    incident.src = JSON.parse(incident.src);
-    incident.categories = JSON.parse(incident.categories);
-    return incident;
-  });
-}
